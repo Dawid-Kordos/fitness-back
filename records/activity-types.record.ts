@@ -17,7 +17,7 @@ export class ActivityTypesRecord implements ActivityTypeEntity {
     }
 
     static async getAll(): Promise<ActivityTypeEntity[] | null> {
-        const [results] = await pool.execute('SELECT * FROM `warriors`') as ActivityTypesRecordResult;
+        const [results] = await pool.execute('SELECT * FROM `activity_types`') as ActivityTypesRecordResult;
 
         if(!results) {
             throw new ValidationError('There are no activity types defined.');
