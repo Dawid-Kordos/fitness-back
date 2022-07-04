@@ -1,5 +1,6 @@
-import {ActivityTypeEntity} from "../types";
 import {FieldPacket} from "mysql2";
+import {v4 as uuid} from 'uuid';
+import {ActivityTypeEntity} from "../types";
 import {pool} from "../utils/db";
 import {ValidationError} from "../utils/errors";
 
@@ -12,7 +13,11 @@ export class ActivityTypesRecord implements ActivityTypeEntity {
     constructor(obj: ActivityTypeEntity) {
         const {id, name} = obj;
 
-        this.id = id;
+        if(name.trim().length < 2 || name.trim().length > 50) {
+            throw new ValidationError(`Activity name should have at least 2 and at most 50 characters, but you have entered ${name.trim().length}.`);
+        }
+
+        this.id = id ?? uuid();
         this.name = name;
     }
 
