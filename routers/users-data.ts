@@ -5,13 +5,24 @@ export const userDataRouter = Router();
 
 userDataRouter
 
-    .post('/', async(req, res) => {
+    .get('/:id', async (req, res) => {
+        const {id} = req.params;
+        const user = await UsersDataRecord.getOne(id);
+        res.json(user);
+    })
+
+    .get('/', async(req, res) => {
+        const users = await UsersDataRecord.getAll();
+        res.json(users);
+    })
+
+    .post('/', async (req, res) => {
         const {
             firstName, lastName, email, password,
         } = req.body
 
         const user = new UsersDataRecord({
-             ...req.body,
+            ...req.body,
             firstName,
             lastName,
             email,
@@ -20,8 +31,5 @@ userDataRouter
 
         const id = await user.insert();
 
-        res.json({
-            name: user.firstName,
-            id,
-        });
+        res.json(id); //name: user.firstName,
     });

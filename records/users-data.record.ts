@@ -1,7 +1,10 @@
 import {v4 as uuid} from 'uuid';
+import {FieldPacket} from "mysql2";
 import {UserDataEntity} from "../types";
 import {ValidationError} from "../utils/errors";
 import {pool} from "../utils/db";
+
+type UsersDataRecordResult = [UsersDataRecord[], FieldPacket[]];
 
 export class UsersDataRecord implements UserDataEntity {
     public id?: string;
@@ -14,10 +17,6 @@ export class UsersDataRecord implements UserDataEntity {
     constructor(obj: UserDataEntity) {
         const {id, firstName, lastName, email, password, password1} = obj;
 
-        if(!firstName || !lastName || !email || !password || !password1){
-            throw new ValidationError('Please fill all fields.');
-        }
-
         if (firstName.trim().length < 3 || firstName.length > 20) {
             throw new ValidationError(`First name must have at least 3 and at most 20 characters, but you have entered ${firstName.trim().length}.`);
         }
@@ -26,20 +25,20 @@ export class UsersDataRecord implements UserDataEntity {
             throw new ValidationError(`Last name must have at least 3 and at most 55 characters, but you have entered ${lastName.trim().length}.`);
         }
 
-        if (email.indexOf('@') === -1) {
-            throw new ValidationError('Email must contain @.');
+        if (email.indexOf('@') === -1 || email.indexOf('.') === -1) {
+            throw new ValidationError('Incorrect email format.');
         }
 
         if (email.trim().length < 7 || email.length > 75) {
             throw new ValidationError(`Email must have at least 7 and at most 75 characters, but you have entered ${email.trim().length}.`);
         }
 
-        if (password.trim().length < 8 || password.length > 20 || password1.trim().length < 8 || password1.length > 20) {
+        if (password.trim().length < 8 || password.length > 20) {
             throw new ValidationError('Password must have at least 8 and at most 20 characters');
         }
 
         if (password !== password1) {
-            throw new ValidationError('Passwords must be equal.');
+            throw new ValidationError('Passwords are not the same.');
         }
 
         this.id = id ?? uuid();
@@ -61,5 +60,26 @@ export class UsersDataRecord implements UserDataEntity {
             });
 
         return this.id;
-    }
+    };
+
+    static async getAll(): Promise<UserDataEntity[] | null> {
+        const [result] = await pool.execute('SELECT * FROM `users_data`') as UsersDataRecordResult;
+
+        return result.map(obj => new UsersDataRecord({
+            ...result[0],
+            password1: result[0].password,
+        }));
+    };
+
+    static async getOne(id: string): Promise<UserDataEntity | null> {
+        const [result] = await pool.execute(
+            'SELECT * FROM `users_data` WHERE `id` = :id', {
+                id,
+            }) as UsersDataRecordResult;
+
+        return result.length === 0 ? null : new UsersDataRecord({
+            ...result[0],
+            password1: result[0].password,
+        });
+    };
 }
