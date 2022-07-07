@@ -6,3 +6,13 @@ export interface UserDataEntity {
     password: string;
     password1?: string;
 }
+
+export interface LoginDataEntity {
+    email: string;
+    password: string;
+}
+
+export type LoginDataType = {
+    email: string,
+    password: string,
+}
