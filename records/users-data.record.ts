@@ -66,8 +66,8 @@ export class UsersDataRecord implements UserDataEntity {
         const [result] = await pool.execute('SELECT * FROM `users_data`') as UsersDataRecordResult;
 
         return result.map(obj => new UsersDataRecord({
-            ...result[0],
-            password1: result[0].password,
+            ...obj,
+            password1: obj.password,
         }));
     };
 
