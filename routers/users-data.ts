@@ -48,6 +48,7 @@ userDataRouter
 
         let isOk: boolean = false;
         let userName: string = '';
+        let userId: string = '';
 
         const users = await UsersDataRecord.getAll();
 
@@ -55,6 +56,7 @@ userDataRouter
             if (user.email === email && user.password === password) {
                 isOk = true;
                 userName = user.firstName;
+                userId = user.id;
             }
         });
 
@@ -63,7 +65,8 @@ userDataRouter
         }
 
         res.json({
-                isOk,
-                userName,
-            });
+            isOk,
+            userName,
+            userId,
+        });
     });
