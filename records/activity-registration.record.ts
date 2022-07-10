@@ -74,9 +74,18 @@ export class ActivityRegistrationRecord implements ActivityRegistrationEntity {
         return this.id;
     };
 
-    static async getAll(userId: string): Promise<ActivityRegistrationEntity[] | null> {
-        const [result] = await pool.execute('SELECT * FROM `activities_users` WHERE `userId` = :userId', {
+    static async getAllUserActivities(userId: string): Promise<ActivityRegistrationEntity[] | null> {
+        const [result] = await pool.execute('SELECT * FROM `activities_users` WHERE `userId` = :userId ORDER BY `activityDate` DESC', {
             userId,
+        }) as ActivityRegistrationRecordResult;
+
+        return result.map(obj => new ActivityRegistrationRecord(obj));
+    };
+
+    static async getAllDateWiseUserActivities(userId: string, activityDate: string): Promise<ActivityRegistrationEntity[] | null> {
+        const [result] = await pool.execute('SELECT * FROM `activities_users` WHERE `userId` = :userId AND `activityDate` = :activityDate ORDER BY `activityName` ASC', {
+            userId,
+            activityDate,
         }) as ActivityRegistrationRecordResult;
 
         return result.map(obj => new ActivityRegistrationRecord(obj));

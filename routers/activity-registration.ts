@@ -4,6 +4,19 @@ import {ActivityRegistrationRecord} from "../records/activity-registration.recor
 export const activityRegistration = Router();
 
 activityRegistration
+
+    .get('/:userId', async (req, res) => {
+        const {userId} = req.params;
+        const userActivities = await ActivityRegistrationRecord.getAllUserActivities(userId);
+        res.json(userActivities);
+    })
+
+    .get('/:userId/:date', async (req, res) => {
+        const {userId, date} = req.params;
+        const userActivities = await ActivityRegistrationRecord.getAllDateWiseUserActivities(userId, date);
+        res.json(userActivities);
+    })
+
     .post('/', async (req, res) => {
         const {
             activityName,
@@ -14,8 +27,6 @@ activityRegistration
             activitySpeed,
             activityComment
         } = req.body;
-
-        console.log(req.body);
 
         const activity = new ActivityRegistrationRecord({
             ...req.body,
