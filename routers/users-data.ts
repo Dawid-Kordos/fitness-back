@@ -22,6 +22,14 @@ userDataRouter
             firstName, lastName, email, password,
         } = req.body
 
+        const allUsers = await UsersDataRecord.getAll();
+
+        allUsers.map(user => {
+            if (user.email === email) {
+                throw new ValidationError('Account with this mail already exists.');
+            }
+        });
+
         const user = new UsersDataRecord({
             ...req.body,
             firstName,
