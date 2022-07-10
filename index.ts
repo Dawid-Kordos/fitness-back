@@ -2,6 +2,7 @@ import express, {json} from 'express';
 import 'express-async-errors';
 import cors from 'cors';
 import {handleError} from "./utils/errors";
+import rateLimit from "express-rate-limit";
 import {activityTypesRouter} from "./routers/activity-types";
 import {userDataRouter} from "./routers/users-data";
 import {activityRegistration} from "./routers/activity-registration";
@@ -13,6 +14,11 @@ app.use(cors({
 }));
 
 app.use(json());
+
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, //15 minutes
+    max: 100, //limit each IP to 100 requests per 15 min
+}));
 
 app.use('/activity-types', activityTypesRouter);
 app.use('/users-data', userDataRouter);
