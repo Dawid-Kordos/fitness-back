@@ -5,6 +5,7 @@ export interface UserDataEntity {
     email: string;
     password: string;
     password1?: string;
+    ivHex: string;
 }
 
 export interface LoginDataEntity {

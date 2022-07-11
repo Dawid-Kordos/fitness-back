@@ -144,4 +144,8 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/node
 
+utils/hash_pwd.ts
+
 config/config.ts
+
+

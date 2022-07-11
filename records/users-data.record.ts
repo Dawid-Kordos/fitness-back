@@ -13,9 +13,10 @@ export class UsersDataRecord implements UserDataEntity {
     public email: string;
     public password: string;
     public password1?: string;
+    public ivHex: string;
 
     constructor(obj: UserDataEntity) {
-        const {id, firstName, lastName, email, password, password1} = obj;
+        const {id, firstName, lastName, email, password, password1, ivHex} = obj;
 
         if (firstName.trim().length < 3 || firstName.length > 20) {
             throw new ValidationError(`First name must have at least 3 and at most 20 characters, but you have entered ${firstName.trim().length}.`);
@@ -33,30 +34,24 @@ export class UsersDataRecord implements UserDataEntity {
             throw new ValidationError(`Email must have at least 7 and at most 75 characters, but you have entered ${email.trim().length}.`);
         }
 
-        if (password.trim().length < 8 || password.length > 20) {
-            throw new ValidationError('Password must have at least 8 and at most 20 characters');
-        }
-
-        if (password !== password1) {
-            throw new ValidationError('Passwords are not the same.');
-        }
-
         this.id = id ?? uuid();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.password1 = password1;
+        this.ivHex = ivHex;
     }
 
     async insert(): Promise<string> {
         await pool.execute(
-            'INSERT INTO `users_data` (`id`, `firstName`, `lastName`, `email`, `password`) VALUES(:id, :firstName, :lastName, :email, :password)', {
+            'INSERT INTO `users_data` (`id`, `firstName`, `lastName`, `email`, `password`, ivHex) VALUES(:id, :firstName, :lastName, :email, :password, :ivHex)', {
                 id: this.id,
                 firstName: this.firstName,
                 lastName: this.lastName,
                 email: this.email,
                 password: this.password,
+                ivHex: this.ivHex,
             });
 
         return this.id;
