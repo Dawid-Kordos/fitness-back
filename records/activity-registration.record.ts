@@ -98,5 +98,11 @@ export class ActivityRegistrationRecord implements ActivityRegistrationEntity {
             }) as ActivityRegistrationRecordResult;
 
         return result.length === 0 ? null : new ActivityRegistrationRecord(result[0]);
-    };
+    }
+
+    async delete(): Promise<void> {
+        await pool.execute('DELETE FROM `activities_users` WHERE `id` = :id', {
+            id: this.id,
+        })
+    }
 }

@@ -17,6 +17,14 @@ activityRegistration
         res.json(userActivities);
     })
 
+
+    .delete('/:id', async (req, res) => {
+        const {id} = req.params;
+        const activity = await ActivityRegistrationRecord.getOne(id);
+        await new ActivityRegistrationRecord(activity).delete();
+        res.json(id);
+    })
+
     .post('/', async (req, res) => {
         const {
             activityName,
